@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, Field
 
 
-class SentCode(BaseModel):
+class SentCodeOut(BaseModel):
     id: int = Field()
     code: str = Field()
     email: str = Field()
@@ -15,10 +15,5 @@ class SentCode(BaseModel):
         orm_mode = True
 
 
-class CodeWasSent(BaseModel):
-    is_sent: bool = Field()
-    sent_code: SentCode = Field()
-
-
-class CodeValidity(BaseModel):
+class CodeValidityOut(BaseModel):
     is_valid: bool = Field()

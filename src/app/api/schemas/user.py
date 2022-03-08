@@ -50,13 +50,9 @@ class UserOut(BaseModel):
         orm_mode = True
 
 
-class IsFieldExistsOut(BaseModel):
+class IsEmailExistsOut(BaseModel):
     exists: bool = Field()
 
 
-class IsEmailExistsOut(IsFieldExistsOut):
-    pass
-
-
-class IsNickExistsOut(IsFieldExistsOut):
-    pass
+class IsNickExistsOut(BaseModel):
+    exists: bool = Field()

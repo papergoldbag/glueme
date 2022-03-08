@@ -4,6 +4,15 @@ from typing import Optional, Union
 from pydantic import BaseModel, Field, EmailStr
 
 
+class TagOut(BaseModel):
+    id: int = Field()
+    tag: str = Field()
+    created: datetime = Field()
+
+    class Config:
+        orm_mode = True
+
+
 class TokenOut(BaseModel):
     id: int = Field()
     token: str = Field()
@@ -26,15 +35,6 @@ class CreateUserIn(BaseModel):
     email: EmailStr = Field()
     password: str = Field()
     code: str = Field()
-
-
-class TagOut(BaseModel):
-    id: int = Field()
-    tag: str = Field()
-    created: datetime = Field()
-
-    class Config:
-        orm_mode = True
 
 
 class UserOut(BaseModel):

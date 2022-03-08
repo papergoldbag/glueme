@@ -1,1 +1,1 @@
-web: uvicorn src.utils.asgi:app --workers 4
+web: uvicorn src.utils.asgi:app --workers 1

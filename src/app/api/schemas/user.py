@@ -57,6 +57,21 @@ class UserOut(BaseModel):
         orm_mode = True
 
 
+class UpdateUser(BaseModel):
+    nick: Optional[str] = Field(None)
+    name: Optional[str] = Field(None)
+    bio: Optional[str] = Field(None)
+
+
+class ConnectedDevice(BaseModel):
+    id: int = Field()
+    user_agent: str = Field()
+    is_me: bool = Field()
+
+    class Config:
+        orm_mode = True
+
+
 class IsEmailExistsOut(BaseModel):
     exists: bool = Field()
 

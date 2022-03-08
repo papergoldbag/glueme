@@ -39,8 +39,8 @@ class User(Base):
     created = Column(DateTime(timezone=False), nullable=False)
     bio = Column(String(511))
 
-    tokens = relationship('UserToken', back_populates='user')
-    tags = relationship(
+    tokens: list[UserToken] = relationship('UserToken', back_populates='user')
+    tags: list[Tag] = relationship(
         'Tag',
         secondary=UserTags.__table__,
         back_populates="users"

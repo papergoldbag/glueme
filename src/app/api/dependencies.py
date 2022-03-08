@@ -10,11 +10,11 @@ from src.db.base import SessionLocal
 
 
 def get_session():
-    db = SessionLocal()
+    session = SessionLocal()
     try:
-        yield db
+        yield session
     finally:
-        db.close()
+        session.close()
 
 
 http_bearer = HTTPBearer()

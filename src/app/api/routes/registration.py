@@ -4,7 +4,7 @@ from fastapi import APIRouter, Body, Depends
 from sqlalchemy.orm import Session
 
 from src.app.api.dependencies import get_session
-from src.app.api.schemas.user import UserOut, CreateUserIn
+from src.app.api.schemas.user import UserOut, UserCreateIn
 from src.app.api.utils import make_http_exception, dt_to_utc, password_hash
 from src.db import models
 
@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 @router.post('', response_model=UserOut)
-async def user_reg(create_user: CreateUserIn = Body(...), s: Session = Depends(get_session)):
+async def user_reg(create_user: UserCreateIn = Body(...), s: Session = Depends(get_session)):
     is_valid_code = s.query(s.query(models.Codes).where(
         models.Codes.email == create_user.email,
         models.Codes.code == create_user.code,

@@ -4,7 +4,9 @@ from fastapi import APIRouter, Depends, Body, Query
 from sqlalchemy.orm import Session
 
 from src.app.api.dependencies import get_current_user, get_session
-from src.app.api.schemas.user import UserOut, AddTagIn, TagOut, UpdateUser, ConnectedDevice
+from src.app.api.schemas.tag import AddTagIn
+from src.app.api.schemas.token import TokenDevicesOut
+from src.app.api.schemas.user import UserOut, TagOut, UserUpdateIn
 from src.app.api.utils import dt_to_utc, make_http_exception
 from src.db import models
 
@@ -17,7 +19,7 @@ def get_my_profile(user: models.User = Depends(get_current_user)):
 
 
 @router.post('.update', response_model=UserOut)
-def update_user(u: UpdateUser = Body(...), user: models.User = Depends(get_current_user), s: Session = Depends(get_session)):
+def update_user(u: UserUpdateIn = Body(...), user: models.User = Depends(get_current_user), s: Session = Depends(get_session)):
     data_update = u.dict(exclude_unset=True)
     for key, value in data_update.items():
         setattr(user, key, value)
@@ -25,11 +27,11 @@ def update_user(u: UpdateUser = Body(...), user: models.User = Depends(get_curre
     return UserOut.from_orm(user)
 
 
-@router.get('.connected_device', response_model=list[ConnectedDevice])
+@router.get('.connected_device', response_model=list[TokenDevicesOut])
 def connected_device(user: models.User = Depends(get_current_user), s: Session = Depends(get_session)):
     res = []
     for t in user.tokens:
-        res.append(ConnectedDevice(
+        res.append(TokenDevicesOut(
             id=t.id,
             user_agent=t.user_agent,
             is_me=True if user.id == t.user_id else False

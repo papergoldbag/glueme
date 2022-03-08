@@ -3,31 +3,7 @@ from typing import Optional, Union
 
 from pydantic import BaseModel, Field, EmailStr
 
-
-class TagOut(BaseModel):
-    id: int = Field()
-    tag: str = Field()
-    created: datetime = Field()
-
-    class Config:
-        orm_mode = True
-
-
-class AddTagIn(BaseModel):
-    tag: str = Field()
-
-    class Config:
-        orm_mode = True
-
-
-class TokenOut(BaseModel):
-    id: int = Field()
-    token: str = Field()
-    user_agent: str = Field()
-    user_id: int = Field()
-
-    class Config:
-        orm_mode = True
+from src.app.api.schemas.tag import TagOut
 
 
 class UserAuth(BaseModel):
@@ -36,7 +12,7 @@ class UserAuth(BaseModel):
     user_agent: str = Field()
 
 
-class CreateUserIn(BaseModel):
+class UserCreateIn(BaseModel):
     nick: str = Field()
     name: Optional[str] = Field(None)
     email: EmailStr = Field()
@@ -57,19 +33,10 @@ class UserOut(BaseModel):
         orm_mode = True
 
 
-class UpdateUser(BaseModel):
+class UserUpdateIn(BaseModel):
     nick: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
     bio: Optional[str] = Field(None)
-
-
-class ConnectedDevice(BaseModel):
-    id: int = Field()
-    user_agent: str = Field()
-    is_me: bool = Field()
-
-    class Config:
-        orm_mode = True
 
 
 class IsEmailExistsOut(BaseModel):

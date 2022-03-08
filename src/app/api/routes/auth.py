@@ -8,7 +8,8 @@ from sqlalchemy.orm import Session
 from starlette import status
 
 from src.app.api.dependencies import get_session
-from src.app.api.schemas.user import UserAuth, TokenOut
+from src.app.api.schemas.token import TokenOut
+from src.app.api.schemas.user import UserAuth
 from src.app.api.utils import verify_password
 from src.db import models
 

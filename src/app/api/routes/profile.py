@@ -31,7 +31,7 @@ def update_user(u: UserUpdateIn = Body(...), user: models.User = Depends(get_cur
 
 
 @router.get('.connected_device', response_model=list[TokenDevicesOut])
-def connected_device(user: models.User = Depends(get_current_user), s: Session = Depends(get_session)):
+def connected_device(user: models.User = Depends(get_current_user)):
     res = []
     for t in user.tokens:
         res.append(TokenDevicesOut(

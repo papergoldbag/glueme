@@ -1,1 +1,1 @@
-web: uvicorn src.utils.asgi:app --workers 1
+web: uvicorn src.utils.asgi:app --host=0.0.0.0 --port=${PORT:-5000}

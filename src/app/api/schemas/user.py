@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, Union
 
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field, EmailStr, validator
 
 from src.app.api.schemas.tag import TagOut
 
@@ -14,10 +14,17 @@ class UserAuth(BaseModel):
 
 class UserCreateIn(BaseModel):
     nick: str = Field()
-    name: Optional[str] = Field(None)
     email: EmailStr = Field()
     password: str = Field()
     code: str = Field()
+
+    @validator('nick')
+    def make_nick(cls, v):
+        return v.strip()
+
+    @validator('email')
+    def make_email(cls, v):
+        return v.strip()
 
 
 class UserOut(BaseModel):
@@ -34,9 +41,16 @@ class UserOut(BaseModel):
 
 
 class UserUpdateIn(BaseModel):
-    nick: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
     bio: Optional[str] = Field(None)
+
+    @validator('name')
+    def make_name(cls, v):
+        return v.strip() if v else None
+
+    @validator('bio')
+    def make_bio(cls, v):
+        return v.strip() if v else None
 
 
 class IsEmailExistsOut(BaseModel):

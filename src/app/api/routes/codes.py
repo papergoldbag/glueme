@@ -21,7 +21,8 @@ def generate_code() -> str:
 
 
 @router.get('.send', response_model=SentCodeStatusOut)
-def send_code(email: str, session: Session = Depends(get_session)):
+def send_code(email: str = Query(...), session: Session = Depends(get_session)):
+    email = email.strip()
     code = generate_code()
     try:
         EmailSender.send_simple_message([email], 'Send Code', code)

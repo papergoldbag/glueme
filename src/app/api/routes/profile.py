@@ -21,9 +21,6 @@ def get_my_profile(user: models.User = Depends(get_current_user)):
 @router.post('.update', response_model=UserOut)
 def update_user(u: UserUpdateIn = Body(...), user: models.User = Depends(get_current_user), s: Session = Depends(get_session)):
     data_update = u.dict(exclude_unset=True)
-    if 'nick' in data_update and not data_update['nick']:
-        raise make_http_exception(['nick'], msg='nick is None')
-
     for key, value in data_update.items():
         setattr(user, key, value)
     s.commit()

@@ -25,14 +25,13 @@ async def user_reg(create_user: UserCreateIn = Body(...), s: Session = Depends(g
     if email_exists:
         raise make_http_exception(['email'], 'email is exists')
 
-    email_exists = s.query(s.query(models.User).where(models.User.nick == create_user.nick).exists()).scalar()
-    if email_exists:
+    nick_exists = s.query(s.query(models.User).where(models.User.nick == create_user.nick).exists()).scalar()
+    if nick_exists:
         raise make_http_exception(['nick'], 'nick is exists')
 
     user_data = create_user.dict()
     user = models.User(
         nick=user_data['nick'],
-        name=user_data['name'],
         email=user_data['email'],
         password_hash=password_hash(create_user.password),
         created=dt_to_utc(datetime.now())

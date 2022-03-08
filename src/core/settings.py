@@ -10,8 +10,10 @@ class Settings(BaseSettings):
     mailgun_api_key: str
     max_sec_code_reg: int
 
-    # class Config:
-    #     env_file = pathlib.Path(os.path.abspath(__file__)).parent.parent.parent / '.env'
+    class Config:
+        _env_file = pathlib.Path(os.path.abspath(__file__)).parent.parent.parent / '.env'
+        if os.path.exists(_env_file):
+            env_file = _env_file
 
 
 settings: Settings = Settings()

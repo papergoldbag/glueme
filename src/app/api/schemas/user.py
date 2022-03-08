@@ -13,6 +13,13 @@ class TagOut(BaseModel):
         orm_mode = True
 
 
+class AddTagIn(BaseModel):
+    tag: str = Field()
+
+    class Config:
+        orm_mode = True
+
+
 class TokenOut(BaseModel):
     id: int = Field()
     token: str = Field()

@@ -18,7 +18,7 @@ class Tag(Base):
     __tablename__ = 'tags'
 
     id = Column(Integer, Identity('by default'), primary_key=True)
-    tag = Column(VARCHAR(63), nullable=False, unique=True)
+    title = Column(VARCHAR(63), nullable=False)
     created = Column(DateTime(timezone=False), nullable=False)
 
     users = relationship(

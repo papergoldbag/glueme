@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 
 class TagOut(BaseModel):
     id: int = Field()
-    tag: str = Field()
+    title: str = Field()
     created: datetime = Field()
 
     class Config:
@@ -13,7 +13,7 @@ class TagOut(BaseModel):
 
 
 class AddTagIn(BaseModel):
-    tag: str = Field()
+    title: str = Field()
 
     class Config:
         orm_mode = True

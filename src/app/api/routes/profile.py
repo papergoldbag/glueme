@@ -13,7 +13,7 @@ from src.db import models
 router = APIRouter()
 
 
-@router.post('', response_model=UserOut)
+@router.get('', response_model=UserOut)
 def get_my_profile(user: models.User = Depends(get_current_user)):
     return UserOut.from_orm(user)
 
@@ -21,6 +21,9 @@ def get_my_profile(user: models.User = Depends(get_current_user)):
 @router.post('.update', response_model=UserOut)
 def update_user(u: UserUpdateIn = Body(...), user: models.User = Depends(get_current_user), s: Session = Depends(get_session)):
     data_update = u.dict(exclude_unset=True)
+    if 'nick' in data_update and not data_update['nick']:
+        raise make_http_exception(['nick'], msg='nick is None')
+
     for key, value in data_update.items():
         setattr(user, key, value)
     s.commit()
@@ -41,16 +44,16 @@ def connected_device(user: models.User = Depends(get_current_user), s: Session =
 
 @router.post('.add_tag', response_model=list[TagOut])
 def add_tag(addtag: AddTagIn = Body(...), s: Session = Depends(get_session), user: models.User = Depends(get_current_user)):
-    tag_value = addtag.tag.strip()
+    tag_title = addtag.title.strip()
 
-    tag = s.query(models.Tag).where(models.Tag.tag == tag_value).scalar()
+    tag = s.query(models.Tag).where(models.Tag.title == tag_title).scalar()
     if tag:
         user_tag = s.query(models.UserTags).where(models.UserTags.tag_id == tag.id)
         if user_tag:
             raise make_http_exception(['tag_value'], msg='you have this tag yet')
     else:
         tag = models.Tag(
-            tag=tag_value,
+            title=tag_title,
             created=dt_to_utc(datetime.now())
         )
         s.add(tag)

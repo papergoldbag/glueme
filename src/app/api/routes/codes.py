@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from starlette import status
 
 from src.app.api.dependencies import get_session
-from src.app.api.schemas.code import SentCodeOut, CodeValidityOut
+from src.app.api.schemas.code import CodeValidityOut, SentCodeStatusOut
 from src.app.api.utils import dt_to_utc
 from src.core.settings import settings
 from src.db import models
@@ -20,7 +20,7 @@ def generate_code() -> str:
     return f'{randint(1, 9)}{randint(1, 9)}{randint(1, 9)}{randint(1, 9)}'
 
 
-@router.get('.send', response_model=SentCodeOut)
+@router.get('.send', response_model=SentCodeStatusOut)
 def send_code(email: str, session: Session = Depends(get_session)):
     code = generate_code()
     try:
@@ -36,7 +36,7 @@ def send_code(email: str, session: Session = Depends(get_session)):
     )
     session.add(sent_code)
     session.commit()
-    return SentCodeOut.from_orm(sent_code)
+    return SentCodeStatusOut(is_sent=True)
 
 
 @router.get('.is_valid', response_model=CodeValidityOut)

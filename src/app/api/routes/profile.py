@@ -18,13 +18,6 @@ def get_my_profile(user: models.User = Depends(get_current_user)):
     return UserOut.from_orm(user)
 
 
-@router.put('.update', response_model=UserOut)
-def update_user(u: UserUpdateIn = Body(...), user: models.User = Depends(get_current_user), s: Session = Depends(get_session)):
-    data_update = u.dict(exclude_unset=True)
-    UserService.update_user(s, user=user, **data_update)
-    return UserOut.from_orm(user)
-
-
 @router.get('.connected_device', response_model=list[TokenDevicesOut])
 def connected_device(user: models.User = Depends(get_current_user)):
     res = []
@@ -35,6 +28,13 @@ def connected_device(user: models.User = Depends(get_current_user)):
             is_me=True if user.id == t.user_id else False
         ))
     return res
+
+
+@router.put('.update', response_model=UserOut)
+def update_user(u: UserUpdateIn = Body(...), user: models.User = Depends(get_current_user), s: Session = Depends(get_session)):
+    data_update = u.dict(exclude_unset=True)
+    UserService.update_user(s, user=user, **data_update)
+    return UserOut.from_orm(user)
 
 
 @router.post('.add_tag', response_model=list[TagOut])

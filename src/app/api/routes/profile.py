@@ -1,14 +1,14 @@
-from datetime import datetime
-
 from fastapi import APIRouter, Depends, Body, Query
 from sqlalchemy.orm import Session
 
-from src.app.api.dependencies import get_current_user, get_session
+from src.app.api.deps import get_current_user, get_session
 from src.app.api.schemas.tag import AddTagIn
 from src.app.api.schemas.token import TokenDevicesOut
 from src.app.api.schemas.user import UserOut, TagOut, UserUpdateIn
-from src.app.api.utils import dt_to_utc, make_http_exception
+from src.app.api.utils import make_http_exception
 from src.db import models
+from src.services.tags import TagService
+from src.services.user import UserService
 
 router = APIRouter()
 
@@ -18,12 +18,10 @@ def get_my_profile(user: models.User = Depends(get_current_user)):
     return UserOut.from_orm(user)
 
 
-@router.post('.update', response_model=UserOut)
+@router.put('.update', response_model=UserOut)
 def update_user(u: UserUpdateIn = Body(...), user: models.User = Depends(get_current_user), s: Session = Depends(get_session)):
     data_update = u.dict(exclude_unset=True)
-    for key, value in data_update.items():
-        setattr(user, key, value)
-    s.commit()
+    UserService.update_user(s, user=user, **data_update)
     return UserOut.from_orm(user)
 
 
@@ -41,29 +39,20 @@ def connected_device(user: models.User = Depends(get_current_user)):
 
 @router.post('.add_tag', response_model=list[TagOut])
 def add_tag(addtag: AddTagIn = Body(...), s: Session = Depends(get_session), user: models.User = Depends(get_current_user)):
-    tag_title = addtag.title.strip()
-
-    tag = s.query(models.Tag).where(models.Tag.title == tag_title).scalar()
+    tag = TagService.by_title(s, title=addtag.title)
     if tag:
-        user_tag = s.query(models.UserTags).where(models.UserTags.tag_id == tag.id)
-        if user_tag:
+        if UserService.user_has_tag_id(s, user_id=user.id, tag_id=tag.id):
             raise make_http_exception(['tag_value'], msg='you have this tag yet')
     else:
-        tag = models.Tag(
-            title=tag_title,
-            created=dt_to_utc(datetime.now())
-        )
-        s.add(tag)
-        s.commit()
-
+        tag = TagService.add_tag(s, title=addtag.title)
     user.tags.append(tag)
     s.commit()
     return [TagOut.from_orm(t) for t in user.tags]
 
 
-@router.get('.remove_tag')
+@router.delete('.remove_tag')
 def remove_tag(tag_id: int = Query(...), s: Session = Depends(get_session), user: models.User = Depends(get_current_user)):
-    user_tag = s.query(models.UserTags).where(models.UserTags.tag_id == tag_id, models.UserTags.user_id == user.id).scalar()
+    user_tag = UserService.user_tag_by_id(s, user_id=user.id, tag_id=tag_id)
     if not user_tag:
         raise make_http_exception(['tag_id'], msg=f'tag_id is not exists or u dont have that one')
     s.delete(user_tag)

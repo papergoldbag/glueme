@@ -7,7 +7,7 @@ class EmailSender:
     session = Session()
 
     @classmethod
-    def send_simple_message(cls, to_emails: list[str], subject: str, text: str):
+    def send(cls, to_emails: list[str], subject: str, text: str):
         res = cls.session.post(
             f"https://api.mailgun.net/v3/{settings.mailgun_domain}/messages",
             auth=("api", settings.mailgun_api_key),

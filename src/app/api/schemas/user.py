@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, EmailStr, validator
 from src.app.api.schemas.tag import TagOut
 
 
-class UserAuth(BaseModel):
+class UserAuthIn(BaseModel):
     nick_or_email: Union[str, EmailStr] = Field()
     password: str = Field()
     user_agent: str = Field()

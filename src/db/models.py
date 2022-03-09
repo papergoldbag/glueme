@@ -33,11 +33,11 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     nick = Column(VARCHAR(63), nullable=False, unique=True)
-    name = Column(VARCHAR(31))
+    name = Column(VARCHAR(31), nullable=False, default='')
     email = Column(VARCHAR(127), nullable=False, unique=True)
     password_hash = Column(VARCHAR(127), nullable=False)
     created = Column(DateTime(timezone=False), nullable=False)
-    bio = Column(String(511))
+    bio = Column(String(511), nullable=False, default='')
 
     tokens: list[UserToken] = relationship('UserToken', back_populates='user')
     tags: list[Tag] = relationship(
@@ -57,7 +57,7 @@ class UserToken(Base):
     user = relationship('User', back_populates='tokens')
 
 
-class Codes(Base):
+class Code(Base):
     __tablename__ = 'codes'
     id = Column(Integer, Identity('by default'), primary_key=True)
     code = Column(VARCHAR(63), nullable=False)

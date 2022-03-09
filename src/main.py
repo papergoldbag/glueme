@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 
 from src.app.api.routes import api_router
-from src.app.middleware import setup_middleware
 from src.core.events import on_startup, on_shutdown
+from src.core.middleware import setup_middleware
 
 
 def get_application() -> FastAPI:

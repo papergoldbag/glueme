@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from src.app.api.dependencies import get_session, get_current_user
+from src.app.api.deps import get_current_user, get_session
 from src.app.api.schemas.user import TagOut
 from src.db import models
 

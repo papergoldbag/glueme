@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, Body
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
-from src.app.api.deps import get_current_user, get_session
+from src.app.api.deps import get_current_user, get_session, http_bearer
 from src.app.api.schemas.token import TokenDevicesOut
 from src.app.api.schemas.user import UserOut, UserUpdateIn
 from src.db import models
@@ -15,13 +16,13 @@ def get_my_profile(user: models.User = Depends(get_current_user)):
 
 
 @router.get('.connected_device', response_model=list[TokenDevicesOut])
-def connected_device(user: models.User = Depends(get_current_user)):
+def connected_device(user: models.User = Depends(get_current_user), ac: HTTPAuthorizationCredentials = Depends(http_bearer)):
     res = []
     for t in user.tokens:
         res.append(TokenDevicesOut(
             id=t.id,
             user_agent=t.user_agent,
-            is_me=True if user.id == t.user_id else False
+            is_me=True if t.token == ac.credentials else False
         ))
     return res
 

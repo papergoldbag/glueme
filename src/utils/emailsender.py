@@ -19,3 +19,4 @@ class EmailSender:
             }
         )
         res.raise_for_status()
+

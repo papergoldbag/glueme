@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 
 
-class SentCodeStatusOut(BaseModel):
+class CodeSendingStatusOut(BaseModel):
     is_sent: bool = Field()
 
     class Config:

@@ -18,7 +18,7 @@ class CodeService:
             models.Code.email == email,
             models.Code.code == code,
             models.Code.expired > dt_to_utc(datetime.now()),
-            models.Code.is_active == True
+            models.Code.is_used == False
         ).exists()).scalar()
 
     @classmethod
@@ -32,33 +32,21 @@ class CodeService:
             email=email,
             created=dt_to_utc(datetime.now()),
             expired=dt_to_utc(datetime.now() + timedelta(seconds=settings.max_sec_code_reg)),
-            is_active=True
+            is_used=False
         )
         s.add(sent_code)
         s.commit()
         return sent_code
 
     @classmethod
-    def send_code(cls, s: Session, email: str) -> models.Code:
-        code = cls.generate_code()
-        cls.email_sender.send([email], subject='Код регистрации', text=code)
-        sent_code = cls.add_code(s, email=email, code=code)
-        return sent_code
-
-    @classmethod
-    def get_code(cls, s: Session, *, email: str, code: str, is_active: bool):
-        s.query(models.Code).where(
-            models.Code.email == email,
-            models.Code.code == code,
-            models.Code.expired > dt_to_utc(datetime.now()),
-            models.Code.is_active == False
-        )
-
-    @classmethod
     def deactivate_code(cls, s: Session, *, email: str, code: str):
-        s.query(s.query(models.Code).where(
+        code: models.Code = s.query(s.query(models.Code).where(
             models.Code.email == email,
             models.Code.code == code,
             models.Code.expired > dt_to_utc(datetime.now()),
-            models.Code.is_active == False
+            models.Code.is_used == False
         ).exists()).scalar()
+        if not code:
+            return
+        code.is_used = True
+        s.commit()

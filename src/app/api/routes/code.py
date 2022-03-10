@@ -3,16 +3,19 @@ from pydantic import EmailStr
 from sqlalchemy.orm import Session
 
 from src.app.api.deps import get_session
-from src.app.api.schemas.code import CodeValidityOut, SentCodeStatusOut
+from src.app.api.schemas.code import CodeValidityOut, CodeSendingStatusOut
 from src.services.code import CodeService
+from src.utils.emailsender import EmailSender
 
 router = APIRouter()
 
 
-@router.get('.send', response_model=SentCodeStatusOut)
+@router.get('.send', response_model=CodeSendingStatusOut)
 def send_code(email: EmailStr = Query(...), s: Session = Depends(get_session)):
-    CodeService.send_code(s, email)
-    return SentCodeStatusOut(is_sent=True)
+    code = CodeService.generate_code()
+    EmailSender.send([email], 'GlueMe', f'Registration code: {code}')
+    CodeService.add_code(s, email=email, code=code)
+    return CodeSendingStatusOut(is_sent=True)
 
 
 @router.get('.is_valid', response_model=CodeValidityOut)

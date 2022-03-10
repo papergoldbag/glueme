@@ -16,7 +16,7 @@ class UserService:
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
     @classmethod
-    def by_nick_or_email(cls, s: Session, nick_or_email: str) -> Optional[models.User]:
+    def by_nick_or_email(cls, s: Session, *, nick_or_email: str) -> Optional[models.User]:
         return s.query(models.User).where(or_(models.User.nick == nick_or_email, models.User.email == nick_or_email)).scalar()
 
     @classmethod
@@ -33,7 +33,7 @@ class UserService:
         return res[:128]
 
     @classmethod
-    def add_token(cls, s: Session, user_id: int, user_agent: str) -> models.UserToken:
+    def add_token(cls, s: Session, *, user_id: int, user_agent: str) -> models.UserToken:
         token = models.UserToken(
             token=cls.generate_token(),
             user_agent=user_agent,
@@ -44,15 +44,15 @@ class UserService:
         return token
 
     @classmethod
-    def email_exists(cls, s: Session, email: str) -> bool:
+    def email_exists(cls, s: Session, *, email: str) -> bool:
         return s.query(s.query(models.User).where(models.User.email == email).exists()).scalar()
 
     @classmethod
-    def nick_exists(cls, s: Session, nick: str) -> bool:
+    def nick_exists(cls, s: Session, *, nick: str) -> bool:
         return s.query(s.query(models.User).where(models.User.nick == nick).exists()).scalar()
 
     @classmethod
-    def add_user(cls, s: Session, nick: str, email: str, password: str) -> models.User:
+    def add_user(cls, s: Session, *, nick: str, email: str, password: str) -> models.User:
         user = models.User(
             nick=nick,
             email=email,
@@ -64,29 +64,23 @@ class UserService:
         return user
 
     @classmethod
-    def user_by_token(cls, s: Session, *, token: str) -> Optional[models.User]:
+    def by_token(cls, s: Session, *, token: str) -> Optional[models.User]:
         token = token.strip()
         return s.query(models.User, models.UserToken).filter(
             models.User.id == models.UserToken.user_id, models.UserToken.token == token
         ).scalar()
 
     @classmethod
-    def update_user(cls, s: Session, *, user: models.User, name: str = None, bio: str = None) -> models.User:
-        if name is not None:
-            user.name = name.strip()
-        if bio is not None:
-            user.bio = bio.strip()
-        s.commit()
-        return user
-
-    @classmethod
-    def user_has_tag_id(cls, s: Session, *, user_id: int, tag_id: int) -> bool:
-        return s.query(s.query(models.UserTags).where(
-            models.UserTags.tag_id == tag_id,
-            models.UserTags.user_id == user_id
+    def has_tag_id(cls, s: Session, *, user_id: int, tag_id: int) -> bool:
+        return s.query(s.query(models.UserTag).where(
+            models.UserTag.tag_id == tag_id,
+            models.UserTag.user_id == user_id
         ).exists()).scalar()
 
     @classmethod
-    def user_tag_by_id(cls, s: Session, *, tag_id: int, user_id: int) -> models.UserTags:
-        user_tag = s.query(models.UserTags).where(models.UserTags.tag_id == tag_id, models.UserTags.user_id == user_id).scalar()
-        return user_tag
+    def tag_by_id(cls, s: Session, *, user_id: int, tag_id: int) -> Optional[models.UserTag]:
+        return s.query(models.UserTag).where(
+            models.UserTag.tag_id == tag_id,
+            models.UserTag.user_id == user_id
+        ).scalar()
+

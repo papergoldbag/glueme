@@ -12,12 +12,12 @@ router = APIRouter()
 
 @router.post('', response_model=TokenOut)
 def auth(user_auth: UserAuthIn = Body(...), s: Session = Depends(get_session)):
-    user = UserService.by_nick_or_email(s, user_auth.nick_or_email)
+    user = UserService.by_nick_or_email(s, nick_or_email=user_auth.nick_or_email)
     if not user:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='bad auth data')
     if not UserService.verify_password(user_auth.password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='bad auth data')
 
-    token = UserService.add_token(s, user.id, user_auth.user_agent)
+    token = UserService.add_token(s, user_id=user.id, user_agent=user_auth.user_agent)
     return TokenOut.from_orm(token)
 

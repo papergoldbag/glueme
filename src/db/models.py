@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 from src.db.base import Base, engine
 
 
-class UserTags(Base):
+class UserTag(Base):
     __tablename__ = 'user_tags'
 
     id = Column(Integer, Identity('by default'), primary_key=True)
@@ -23,7 +23,7 @@ class Tag(Base):
 
     users = relationship(
         'User',
-        secondary=UserTags.__table__,
+        secondary=UserTag.__table__,
         back_populates="tags"
     )
 
@@ -42,7 +42,7 @@ class User(Base):
     tokens: list[UserToken] = relationship('UserToken', back_populates='user')
     tags: list[Tag] = relationship(
         'Tag',
-        secondary=UserTags.__table__,
+        secondary=UserTag.__table__,
         back_populates="users"
     )
 
@@ -64,7 +64,7 @@ class Code(Base):
     email = Column(VARCHAR(127), nullable=False)
     created = Column(DateTime(timezone=False), nullable=False)
     expired = Column(DateTime(timezone=False), nullable=False)
-    is_active = Column(Boolean, nullable=False)
+    is_used = Column(Boolean, nullable=False)
 
 
 def create_tables():

@@ -15,11 +15,16 @@ async def user_reg(user_create: UserCreateIn = Body(...), s: Session = Depends(g
     if not CodeService.is_valid_code(s, email=user_create.email, code=user_create.code):
         raise make_http_exception(['code'], 'code is invalid')
 
-    if UserService.email_exists(s, user_create.email):
+    if UserService.email_exists(s, email=user_create.email):
         raise make_http_exception(['email'], 'email exists')
 
-    if UserService.nick_exists(s, user_create.nick):
+    if UserService.nick_exists(s, nick=user_create.nick):
         raise make_http_exception(['nick'], 'nick exists')
 
-    created_user = UserService.add_user(s, user_create.nick, user_create.email, user_create.password)
+    created_user = UserService.add_user(
+        s,
+        nick=user_create.nick,
+        email=user_create.email,
+        password=user_create.password
+    )
     return UserOut.from_orm(created_user)

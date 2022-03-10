@@ -4,6 +4,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from src.db import models
+from src.db.base import SessionLocal
 from src.utils.methods import dt_to_utc
 
 
@@ -31,3 +32,9 @@ class TagService:
     @classmethod
     def tag_id_exists(cls, s: Session, *, _id: int) -> bool:
         return s.query(s.query(models.Tag).where(models.Tag.id == _id).exists()).scalar()
+
+    @classmethod
+    def search_tag(cls, s: Session, *, q: str) -> list[models.Tag]:
+        q = q.strip().lower()
+        res = s.query(models.Tag).filter(func.lower(models.Tag.title).like(f'{q}%')).all()
+        return res

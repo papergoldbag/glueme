@@ -40,38 +40,3 @@ def update_user(u: UserUpdateIn = Body(...), user: models.User = Depends(get_cur
             user.bio = data_update['bio'].strip()
         s.commit()
     return UserOut.from_orm(user)
-
-
-@router.post('.add_tag_with_id', response_model=list[TagOut])
-def add_tag_with_id(addtag: AddTagWithIdIn = Body(...), s: Session = Depends(get_session), user: models.User = Depends(get_current_user)):
-    tag = TagService.by_id(s, _id=addtag.tag_id)
-    if not tag:
-        raise make_http_exception(['tag_id'], 'tag_id not exists')
-    if UserService.has_tag_id(s, user_id=user.id, tag_id=tag.id):
-        raise make_http_exception(['tag_id'], 'u have tag_id yet')
-    user.tags.append(tag)
-    s.commit()
-    return [TagOut.from_orm(t) for t in user.tags]
-
-
-@router.post('.add_tag_with_title', response_model=list[TagOut])
-def add_tag_with_title(addtag: AddTagWithTitleIn = Body(...), s: Session = Depends(get_session), user: models.User = Depends(get_current_user)):
-    tag = TagService.by_title(s, title=addtag.title)
-    if tag:
-        if UserService.has_tag_id(s, user_id=user.id, tag_id=tag.id):
-            raise make_http_exception(['tag_value'], msg='you have this tag yet')
-    else:
-        tag = TagService.add_tag(s, title=addtag.title)
-    user.tags.append(tag)
-    s.commit()
-    return [TagOut.from_orm(t) for t in user.tags]
-
-
-@router.delete('.remove_tag')
-def remove_tag(tag_id: int = Query(...), s: Session = Depends(get_session), user: models.User = Depends(get_current_user)):
-    user_tag = UserService.tag_by_id(s, user_id=user.id, tag_id=tag_id)
-    if not user_tag:
-        raise make_http_exception(['tag_id'], msg=f'tag_id is not exists or u dont have that one')
-    s.delete(user_tag)
-    s.commit()
-    return [TagOut.from_orm(t) for t in user.tags]

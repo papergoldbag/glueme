@@ -3,8 +3,7 @@ from sqlalchemy.orm import Session
 
 from src.app.api.deps import get_current_user, get_session
 from src.app.api.schemas.tag import AddTagWithTitleIn, AddTagWithIdIn
-from src.app.api.schemas.token import TokenDevicesOut
-from src.app.api.schemas.user import UserOut, TagOut, UserUpdateIn
+from src.app.api.schemas.user import TagOut
 from src.app.api.utils import make_http_exception
 from src.db import models
 from src.services.tags import TagService

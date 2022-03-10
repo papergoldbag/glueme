@@ -4,7 +4,6 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from src.db import models
-from src.db.base import SessionLocal
 from src.utils.methods import dt_to_utc
 
 

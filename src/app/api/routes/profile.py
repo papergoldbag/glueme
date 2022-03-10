@@ -1,14 +1,10 @@
-from fastapi import APIRouter, Depends, Body, Query
+from fastapi import APIRouter, Depends, Body
 from sqlalchemy.orm import Session
 
 from src.app.api.deps import get_current_user, get_session
-from src.app.api.schemas.tag import AddTagWithTitleIn, AddTagWithIdIn
 from src.app.api.schemas.token import TokenDevicesOut
-from src.app.api.schemas.user import UserOut, TagOut, UserUpdateIn
-from src.app.api.utils import make_http_exception
+from src.app.api.schemas.user import UserOut, UserUpdateIn
 from src.db import models
-from src.services.tags import TagService
-from src.services.user import UserService
 
 router = APIRouter()
 

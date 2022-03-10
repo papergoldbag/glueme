@@ -33,7 +33,7 @@ class TagService:
         return s.query(s.query(models.Tag).where(models.Tag.id == _id).exists()).scalar()
 
     @classmethod
-    def search_tag(cls, s: Session, *, q: str) -> list[models.Tag]:
+    def search_tags(cls, s: Session, *, q: str) -> list[models.Tag]:
         q = q.strip().lower()
         res = s.query(models.Tag).filter(func.lower(models.Tag.title).like(f'{q}%')).all()
         return res

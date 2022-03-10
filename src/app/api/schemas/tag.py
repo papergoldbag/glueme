@@ -12,6 +12,10 @@ class TagOut(BaseModel):
         orm_mode = True
 
 
+class TagWithIsMyOut(TagOut):
+    is_my: bool = Field()
+
+
 class AddTagWithIdIn(BaseModel):
     tag_id: int = Field(None)
 

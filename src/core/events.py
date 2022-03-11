@@ -1,3 +1,5 @@
+from sqlalchemy.orm import close_all_sessions
+
 from src.db.models import create_tables
 
 
@@ -6,4 +8,4 @@ async def on_startup():
 
 
 async def on_shutdown():
-    pass
+    close_all_sessions()

@@ -9,7 +9,7 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from src.db import models
-from src.utils.methods import dt_to_utc
+from src.utils.normalizer import dt_to_utc
 
 
 class UserService:

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from src.core.settings import settings
 from src.db import models
 from src.utils.emailsender import EmailSender
-from src.utils.methods import dt_to_utc
+from src.utils.normalizer import dt_to_utc
 
 
 class CodeService:

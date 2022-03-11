@@ -17,16 +17,14 @@ class TagWithIsMyOut(TagOut):
 
 
 class AddTagWithIdIn(BaseModel):
-    tag_id: int = Field(None)
+    tag_id: int = Field()
 
 
 class AddTagWithTitleIn(BaseModel):
-    title: str = Field(None)
+    title: str = Field()
 
-    @root_validator
-    def validate(cls, v):
-        if not v:
+    @root_validator(pre=True)
+    def check_values(cls, values):
+        if not values:
             raise ValueError('no tag_id or title')
-
-    class Config:
-        orm_mode = True
+        return values

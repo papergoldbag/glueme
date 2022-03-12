@@ -10,10 +10,10 @@ router = APIRouter()
 
 
 @router.get('.is_email_exists', response_model=IsEmailExistsOut)
-async def is_email_exists(email: EmailStr = Query(...), s: Session = Depends(get_session)):
+def is_email_exists(email: EmailStr = Query(...), s: Session = Depends(get_session)):
     return IsEmailExistsOut(exists=UserService.email_exists(s, email=email))
 
 
 @router.get('.is_nick_exists', response_model=IsNickExistsOut)
-async def is_nick_exists(nick: str = Query(...), s: Session = Depends(get_session)):
+def is_nick_exists(nick: str = Query(...), s: Session = Depends(get_session)):
     return IsNickExistsOut(exists=UserService.nick_exists(s, nick=nick))

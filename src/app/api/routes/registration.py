@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.post('', response_model=UserOut)
-async def user_reg(user_create: UserCreateIn = Body(...), s: Session = Depends(get_session)):
+def user_reg(user_create: UserCreateIn = Body(...), s: Session = Depends(get_session)):
     if not CodeService.is_valid_code(s, email=user_create.email, code=user_create.code):
         raise make_http_exception(['code'], 'code is invalid')
 

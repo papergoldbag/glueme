@@ -21,10 +21,4 @@ class AddTagWithIdIn(BaseModel):
 
 
 class AddTagWithTitleIn(BaseModel):
-    title: str = Field()
-
-    @root_validator(pre=True)
-    def check_values(cls, values):
-        if not values:
-            raise ValueError('no tag_id or title')
-        return values
+    title: str = Field(min_length=2)

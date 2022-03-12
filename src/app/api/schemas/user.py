@@ -44,14 +44,6 @@ class UserUpdateIn(BaseModel):
     name: Optional[str] = Field(None)
     bio: Optional[str] = Field(None)
 
-    @validator('name')
-    def make_name(cls, v):
-        return v.strip() if v else None
-
-    @validator('bio')
-    def make_bio(cls, v):
-        return v.strip() if v else None
-
 
 class IsEmailExistsOut(BaseModel):
     exists: bool = Field()

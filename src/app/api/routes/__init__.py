@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from src.app.api.routes import registration, auth, code, profile, tags, profiletag
+from src.app.api.routes import registration, auth, code, profile, tags, profiletag, users
 
 api_router = APIRouter()
 
@@ -11,3 +11,4 @@ api_router.include_router(auth.router, prefix='/auth', tags=['Auth'])
 api_router.include_router(profile.router, prefix='/profile', tags=['Profile'])
 api_router.include_router(profiletag.router, prefix='/profile/tag', tags=['Profile Tag'])
 api_router.include_router(tags.router, prefix='/tags', tags=['Tags'])
+api_router.include_router(users.router, prefix='/users', tags=['Users'])

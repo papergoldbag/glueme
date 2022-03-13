@@ -12,9 +12,9 @@ router = APIRouter()
 
 @router.get('.send', response_model=CodeSendingStatusOut)
 def send_code(email: EmailStr = Query(...), s: Session = Depends(get_session)):
-    code = CodeService.generate_code()
-    EmailSender.send([email], 'GlueMe', f'Registration code: {code}')
-    CodeService.add_code(s, email=email, code=code)
+    # code = CodeService.generate_code()
+    # EmailSender.send([email], 'GlueMe', f'Registration code: {code}')
+    # CodeService.add_code(s, email=email, code=code)
     return CodeSendingStatusOut(is_sent=True)
 
 

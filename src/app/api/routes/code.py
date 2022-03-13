@@ -17,7 +17,7 @@ def send_code(email: EmailStr = Query(...), s: Session = Depends(get_session)):
         EmailSender.send([email], 'GlueMe', f'Registration code: {code}')
         CodeService.add_code(s, email=email, code=code)
     except Exception as e:
-        return HTTPException(500, detail=str(e))
+        raise HTTPException(200, detail=str(e))
     return CodeSendingStatusOut(is_sent=True)
 
 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, Depends
+from fastapi import APIRouter, Query, Depends, HTTPException
 from pydantic import EmailStr
 from sqlalchemy.orm import Session
 
@@ -12,9 +12,12 @@ router = APIRouter()
 
 @router.get('.send', response_model=CodeSendingStatusOut)
 def send_code(email: EmailStr = Query(...), s: Session = Depends(get_session)):
-    code = CodeService.generate_code()
-    EmailSender.send([email], 'GlueMe', f'Registration code: {code}')
-    CodeService.add_code(s, email=email, code=code)
+    try:
+        code = CodeService.generate_code()
+        EmailSender.send([email], 'GlueMe', f'Registration code: {code}')
+        CodeService.add_code(s, email=email, code=code)
+    except Exception as e:
+        return HTTPException(500, detail=str(e))
     return CodeSendingStatusOut(is_sent=True)
 
 

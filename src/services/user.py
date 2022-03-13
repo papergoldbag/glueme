@@ -46,11 +46,13 @@ class UserService:
 
     @classmethod
     def email_exists(cls, s: Session, *, email: str) -> bool:
-        return s.query(s.query(models.User).where(models.User.email == email.strip()).exists()).scalar()
+        email = email.strip()
+        return s.query(s.query(models.User).where(models.User.email == email).exists()).scalar()
 
     @classmethod
     def nick_exists(cls, s: Session, *, nick: str) -> bool:
-        return s.query(s.query(models.User).where(models.User.nick == nick.strip()).exists()).scalar()
+        nick = nick.strip()
+        return s.query(s.query(models.User).where(models.User.nick == nick).exists()).scalar()
 
     @classmethod
     def add_user(cls, s: Session, *, nick: str, email: str, password: str) -> models.User:

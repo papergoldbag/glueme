@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, Depends, HTTPException
+from fastapi import APIRouter, Query, Depends
 from pydantic import EmailStr
 from sqlalchemy.orm import Session
 

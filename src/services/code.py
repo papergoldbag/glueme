@@ -14,6 +14,8 @@ class CodeService:
 
     @classmethod
     def is_valid_code(cls, s: Session, *, email: str, code: str) -> bool:
+        code = code.strip()
+        email = email.strip()
         return s.query(s.query(models.Code).where(
             models.Code.email == email,
             models.Code.code == code,
@@ -27,6 +29,8 @@ class CodeService:
 
     @classmethod
     def add_code(cls, s: Session, *, email: str, code: str) -> models.Code:
+        code = code.strip()
+        email = email.strip()
         sent_code = models.Code(
             code=code,
             email=email,
@@ -41,8 +45,8 @@ class CodeService:
     @classmethod
     def deactivate_code(cls, s: Session, *, email: str, code: str):
         code: models.Code = s.query(s.query(models.Code).where(
-            models.Code.email == email,
-            models.Code.code == code,
+            models.Code.email == email.strip(),
+            models.Code.code == code.strip(),
             models.Code.expired > dt_to_utc(datetime.now()),
             models.Code.is_used == False
         ).exists()).scalar()

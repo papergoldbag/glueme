@@ -17,6 +17,7 @@ class UserService:
 
     @classmethod
     def by_nick_or_email(cls, s: Session, *, nick_or_email: str) -> Optional[models.User]:
+        nick_or_email = nick_or_email.strip()
         return s.query(models.User).where(or_(models.User.nick == nick_or_email, models.User.email == nick_or_email)).scalar()
 
     @classmethod
@@ -36,7 +37,7 @@ class UserService:
     def add_token(cls, s: Session, *, user_id: int, user_agent: str) -> models.UserToken:
         token = models.UserToken(
             token=cls.generate_token(),
-            user_agent=user_agent,
+            user_agent=user_agent.strip(),
             user_id=user_id
         )
         s.add(token)
@@ -54,8 +55,8 @@ class UserService:
     @classmethod
     def add_user(cls, s: Session, *, nick: str, email: str, password: str) -> models.User:
         user = models.User(
-            nick=nick,
-            email=email,
+            nick=nick.strip(),
+            email=email.strip(),
             password_hash=cls.password_hash(password),
             created=dt_to_utc(datetime.now())
         )

@@ -12,17 +12,17 @@ router = APIRouter()
 
 @router.get('.send', response_model=CodeSendingStatusOut)
 def send_code(email: EmailStr = Query(...), s: Session = Depends(get_session)):
-    # code = CodeService.generate_code()
-    # EmailSender.send([email], 'GlueMe', f'Registration code: {code}')
-    # CodeService.add_code(s, email=email, code=code)
+    code = CodeService.generate_code()
+    EmailSender.send([email], 'GlueMe', f'Registration code: {code}')
+    CodeService.add_code(s, email=email, code=code)
     return CodeSendingStatusOut(is_sent=True)
 
 
 @router.get('.is_valid', response_model=CodeValidityOut)
 def is_valid(email: EmailStr = Query(...), code: str = Query(...), s: Session = Depends(get_session)):
-    # TODO
-    if code == '1234':
-        return CodeValidityOut(is_valid=True)
+    # TODO: TEST, check if exists
+    # if code == '1234':
+    #     return CodeValidityOut(is_valid=True)
     return CodeValidityOut(is_valid=CodeService.is_valid_code(s, email=email, code=code))
 
 

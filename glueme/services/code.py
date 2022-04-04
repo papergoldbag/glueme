@@ -8,11 +8,11 @@ from glueme.app.settings import DELAY_BETWEEN_REG_CODES, CodeTypes, LIFETIME_REG
     LIFETIME_FORGOTPASS_CODE
 from glueme.models import models
 from glueme.utils.dtutc import dt_to_utc
-from glueme.utils.mailgun import Mailgun
+from glueme.utils.emailsender import EmailSender
 
 
 class CodeService:
-    email_sender = Mailgun()
+    email_sender = EmailSender()
 
     def __init__(self, auto_commit: bool = True):
         self.is_auto_commit = auto_commit

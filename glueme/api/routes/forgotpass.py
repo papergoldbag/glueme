@@ -10,7 +10,7 @@ from glueme.app.settings import DELAY_BETWEEN_FORGOTPASS_CODES, CodeTypes
 from glueme.models import models
 from glueme.services.code import CodeService
 from glueme.services.user import UserService
-from glueme.utils.mailgun import Mailgun
+from glueme.utils.emailsender import EmailSender
 
 router = APIRouter()
 
@@ -36,7 +36,7 @@ def send_forgotpass_code(nick_or_email: str, s: Session = Depends(get_session)):
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, f'wait {DELAY_BETWEEN_FORGOTPASS_CODES} sec before sending')
     code = CodeService.generate_code()
     try:
-        Mailgun.send(user.email, 'GlueMe', f'Код для сброса пароля: {code}')
+        EmailSender.send(user.email, 'Код для сброса пароля', f'{code}')
     except Exception as e:
         logger.opt(exception=e).error(e)
         raise HTTPException(status.HTTP_400_BAD_REQUEST, 'smth wrong with sending')

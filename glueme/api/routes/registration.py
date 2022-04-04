@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query
+from loguru import logger
 from pydantic import EmailStr
 from sqlalchemy.orm import Session
 from starlette import status
@@ -14,7 +15,7 @@ from glueme.models import models
 from glueme.services.code import CodeService
 from glueme.services.user import UserService
 from glueme.utils.dtutc import dt_to_utc
-from glueme.utils.mailgun import Mailgun
+from glueme.utils.emailsender import EmailSender
 
 router = APIRouter()
 
@@ -46,6 +47,10 @@ def registration(reg: RegistrationIn = Body(...), s: Session = Depends(get_sessi
             tag_id=tag_id
         ))
     s.commit()
+    try:
+        EmailSender.send(new_user.email, 'Регистрация', f'Поздравляем с регистрацией, {new_user.nick}!!!')
+    except Exception as e:
+        logger.opt(exception=e).error(e)
     return UserOut.from_orm(new_user)
 
 
@@ -57,9 +62,10 @@ def send_code(email: EmailStr = Query(...), s: Session = Depends(get_session)):
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, f'wait {DELAY_BETWEEN_REG_CODES} sec before sending')
     code = CodeService.generate_code()
     try:
-        Mailgun.send([email], 'GlueMe', f'Код регистрации: {code}')
+        EmailSender.send(email, 'Код для регистрации', f'{code}')
     except Exception as e:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, 'smth wrong with sending')
+        logger.opt(exception=e).error(e)
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, 'smth wrong with email sending')
     sent_code = CodeService.add_reg_code(s, email=email, code=code)
     return SentCodeOut.from_orm(sent_code)
 

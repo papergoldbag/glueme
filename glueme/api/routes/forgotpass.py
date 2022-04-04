@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, Body
+from loguru import logger
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -27,16 +28,18 @@ def change_password(fp: UserForgotPass = Body(...), s: Session = Depends(get_ses
 
 
 @router.get('.send_code', response_model=SentCodeOut)
-def send_forgotpass_code(email: str, s: Session = Depends(get_session)):
-    if not models.User.email_exists(s, email=email):
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, 'email not exists')
-    if not CodeService.can_send_forgotpass_code(s, email=email):
+def send_forgotpass_code(nick_or_email: str, s: Session = Depends(get_session)):
+    user = models.User.by_nick_or_email(s, nick_or_email=nick_or_email)
+    if not user:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, 'user not exists')
+    if not CodeService.can_send_forgotpass_code(s, email=user.email):
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, f'wait {DELAY_BETWEEN_FORGOTPASS_CODES} sec before sending')
     code = CodeService.generate_code()
     try:
-        Mailgun.send([email], 'GlueMe', f'Код для сброса пароля: {code}')
+        Mailgun.send(user.email, 'GlueMe', f'Код для сброса пароля: {code}')
     except Exception as e:
+        logger.opt(exception=e).error(e)
         raise HTTPException(status.HTTP_400_BAD_REQUEST, 'smth wrong with sending')
-    added_code = CodeService.add_forgotpass_code(s, email=email, code=code)
-    return SentCodeOut.from_orm(added_code)
+    sent_code = CodeService.add_forgotpass_code(s, email=user.email, code=code)
+    return SentCodeOut.from_orm(sent_code)
 

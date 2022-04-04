@@ -105,8 +105,12 @@ class UserToken(Base):
     user = relationship('User', back_populates='tokens')
 
     @classmethod
-    def by_id(cls, s: Session, *, _id: int) -> Tag:
+    def by_id(cls, s: Session, *, _id: int) -> Optional[Tag]:
         return s.query(cls).where(cls.id == _id).scalar()
+
+    @classmethod
+    def by_token(cls, s: Session, *, token: str) -> Optional[Tag]:
+        return s.query(cls).where(cls.token == token).scalar()
 
 
 class CodeType(Base):

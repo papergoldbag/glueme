@@ -60,8 +60,8 @@ def send_code(email: EmailStr = Query(...), s: Session = Depends(get_session)):
         Mailgun.send([email], 'GlueMe', f'Код регистрации: {code}')
     except Exception as e:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, 'smth wrong with sending')
-    added_code = CodeService.add_reg_code(s, email=email, code=code)
-    return SentCodeOut.from_orm(added_code)
+    sent_code = CodeService.add_reg_code(s, email=email, code=code)
+    return SentCodeOut.from_orm(sent_code)
 
 
 @router.get('.is_valid_code', response_model=CodeValidityOut)

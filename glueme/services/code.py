@@ -14,6 +14,9 @@ from glueme.utils.mailgun import Mailgun
 class CodeService:
     email_sender = Mailgun()
 
+    def __init__(self, auto_commit: bool = True):
+        self.is_auto_commit = auto_commit
+
     @classmethod
     def _get_last_code(cls, s: Session, *, email: str, code_type_name: str) -> Optional[models.SentCode]:
         return s.query(models.SentCode).filter(

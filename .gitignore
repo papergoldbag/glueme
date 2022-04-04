@@ -5,7 +5,7 @@ __pycache__
 */*/*/*/__pycache__
 .idea
 push.sh
-herokupush.sh
+pushheroku.sh
 *.csv
 *.sqlite
 settings.py

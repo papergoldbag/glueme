@@ -1,0 +1,14 @@
+[Unit]
+Description=GlueMe Api
+After=network.target
+
+[Service]
+User=glueme
+WorkingDirectory=/home/glueme/glueme
+Environment=/home/glueme/glueme/.venv/python
+ExecStart=/home/glueme/glueme/.venv/bin/python /home/glueme/glueme/mainrun.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

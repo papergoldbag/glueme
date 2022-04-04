@@ -1,9 +1,11 @@
-from pydantic import Field, EmailStr, validator
+from pydantic import Field, EmailStr, validator, BaseModel, constr
 
-from glueme.api.schemas.user import NickBase, PasswordBase
+from glueme.api.schemas.user import re_nick, re_password
 
 
-class RegistrationIn(NickBase, PasswordBase):
+class RegistrationIn(BaseModel):
+    nick: constr(regex=re_nick)
+    password: constr(regex=re_password)
     email: EmailStr
     code: str
     tag_ids: list[int] = Field(min_items=3)

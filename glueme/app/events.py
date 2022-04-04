@@ -12,6 +12,8 @@ def add_code_types():
     session = new_session()
     if not models.CodeType.type_exists(session, name=CodeTypes.REG):
         session.add(models.CodeType(name=CodeTypes.REG))
+    if not models.CodeType.type_exists(session, name=CodeTypes.FORGOT_PASS):
+        session.add(models.CodeType(name=CodeTypes.FORGOT_PASS))
     session.commit()
     session.close()
 

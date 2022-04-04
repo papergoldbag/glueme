@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, Field
 
 
-class CodeOut(BaseModel):
+class SentCodeOut(BaseModel):
     email: str
     created: datetime
     expired: datetime

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from starlette import status
 
 from glueme.api.depends import get_session
-from glueme.api.schemas.code import CodeValidityOut, CodeOut
+from glueme.api.schemas.code import CodeValidityOut, SentCodeOut
 from glueme.api.schemas.registration import RegistrationIn
 from glueme.api.schemas.user import UserOut
 from glueme.app.settings import DELAY_BETWEEN_REG_CODES, CodeTypes
@@ -49,7 +49,7 @@ def registration(reg: RegistrationIn = Body(...), s: Session = Depends(get_sessi
     return UserOut.from_orm(new_user)
 
 
-@router.get('.send_code', response_model=CodeOut)
+@router.get('.send_code', response_model=SentCodeOut)
 def send_code(email: EmailStr = Query(...), s: Session = Depends(get_session)):
     if models.User.email_exists(s, email=email):
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, 'email exists yet, u cannot send code on this email')
@@ -61,7 +61,7 @@ def send_code(email: EmailStr = Query(...), s: Session = Depends(get_session)):
     except Exception as e:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, 'smth wrong with sending')
     added_code = CodeService.add_reg_code(s, email=email, code=code)
-    return CodeOut.from_orm(added_code)
+    return SentCodeOut.from_orm(added_code)
 
 
 @router.get('.is_valid_code', response_model=CodeValidityOut)

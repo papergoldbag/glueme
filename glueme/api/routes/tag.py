@@ -14,6 +14,20 @@ def all_tags(s: Session = Depends(get_session)):
     return [TagOut.from_orm(t) for t in s.query(models.Tag).all()]
 
 
+@router.get('.with_is_my', response_model=list[TagWithIsMyOut])
+def all_tags_with_is_my(user: models.User = Depends(get_current_user), s: Session = Depends(get_session)):
+    user_tag_ids = [t.id for t in user.tags]
+    res = []
+    for tag in s.query(models.Tag).all():
+        res.append(TagWithIsMyOut(
+            id=tag.id,
+            title=tag.title,
+            created=tag.created,
+            is_my=True if tag.id in user_tag_ids else False
+        ))
+    return res
+
+
 @router.get('.search', response_model=list[TagWithIsMyOut])
 def search_tags(q: str = Query(...), user: models.User = Depends(get_current_user), s: Session = Depends(get_session)):
     res = []

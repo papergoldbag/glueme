@@ -5,13 +5,8 @@ from pydantic import BaseModel, Field, EmailStr, validator, constr
 
 from glueme.api.schemas.tag import TagOut
 
-
-class NickBase(BaseModel):
-    nick: constr(regex=r'^(?=.{3,20}$)(?![0-9_])[a-zA-Z0-9_]+(?<![_.])$')
-
-
-class PasswordBase(BaseModel):
-    password: constr(regex=r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,}$')
+re_password = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,}$'
+re_nick = r'^(?=.{3,20}$)(?![0-9_])[a-zA-Z0-9_]+(?<![_.])$'
 
 
 class UserAuthIn(BaseModel):
@@ -54,7 +49,9 @@ class UserUpdateIn(BaseModel):
         return v.strip() if v else v
 
 
-class UserUpdateNickIn(NickBase):
+class UserUpdateNickIn(BaseModel):
+    nick: constr(regex=re_nick)
+
     @validator('nick')
     def make_nick(cls, v):
         return v.strip() if v else v

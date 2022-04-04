@@ -4,7 +4,8 @@ from typing import Optional
 
 from sqlalchemy.orm import Session
 
-from glueme.app.settings import DELAY_BETWEEN_REG_CODES, CodeTypes, LIFETIME_REG_CODE
+from glueme.app.settings import DELAY_BETWEEN_REG_CODES, CodeTypes, LIFETIME_REG_CODE, DELAY_BETWEEN_FORGOTPASS_CODES, \
+    LIFETIME_FORGOTPASS_CODE
 from glueme.models import models
 from glueme.utils.dtutc import dt_to_utc
 from glueme.utils.mailgun import Mailgun
@@ -42,6 +43,10 @@ class CodeService:
         return cls._can_send(s, email=email, code_type_name=CodeTypes.REG, delay=DELAY_BETWEEN_REG_CODES)
 
     @classmethod
+    def can_send_forgotpass_code(cls, s: Session, *, email: str) -> bool:
+        return cls._can_send(s, email=email, code_type_name=CodeTypes.FORGOT_PASS, delay=DELAY_BETWEEN_FORGOTPASS_CODES)
+
+    @classmethod
     def is_valid_reg_code(cls, s: Session, *, email: str, code: str) -> bool:
         code = cls.get_valid_code(s, email=email, code=code, code_type_name=CodeTypes.REG)
         return True if code else False
@@ -67,3 +72,8 @@ class CodeService:
     @classmethod
     def add_reg_code(cls, s: Session, *, email: str, code: str):
         return cls._add_code(s, email=email, code=code, code_type_name=CodeTypes.REG, lifetime=LIFETIME_REG_CODE)
+
+    @classmethod
+    def add_forgotpass_code(cls, s: Session, *, email: str, code: str):
+        return cls._add_code(s, email=email, code=code, code_type_name=CodeTypes.FORGOT_PASS, lifetime=LIFETIME_FORGOTPASS_CODE)
+

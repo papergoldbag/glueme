@@ -21,3 +21,12 @@ class RegistrationIn(BaseModel):
     @validator('email')
     def make_email(cls, v):
         return v.strip()
+
+
+class IsEmailExistsOut(BaseModel):
+    exists: bool = Field()
+
+
+class IsNickExistsOut(BaseModel):
+    exists: bool = Field()
+

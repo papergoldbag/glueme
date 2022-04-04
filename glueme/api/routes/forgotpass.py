@@ -15,7 +15,6 @@ from glueme.utils.mailgun import Mailgun
 router = APIRouter()
 
 
-
 @router.post('', response_model=PasswordWasChanged)
 def change_password(fp: UserForgotPass = Body(...), s: Session = Depends(get_session)):
     user = models.User.by_nick_or_email(s, nick_or_email=fp.nick_or_email)

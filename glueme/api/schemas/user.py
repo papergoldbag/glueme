@@ -55,11 +55,3 @@ class UserUpdateNickIn(BaseModel):
     @validator('nick')
     def make_nick(cls, v):
         return v.strip() if v else v
-
-
-class IsEmailExistsOut(BaseModel):
-    exists: bool = Field()
-
-
-class IsNickExistsOut(BaseModel):
-    exists: bool = Field()

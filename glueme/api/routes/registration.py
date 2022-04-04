@@ -7,7 +7,7 @@ from starlette import status
 
 from glueme.api.depends import get_session
 from glueme.api.schemas.code import CodeValidityOut, SentCodeOut
-from glueme.api.schemas.registration import RegistrationIn
+from glueme.api.schemas.registration import RegistrationIn, IsEmailExistsOut, IsNickExistsOut
 from glueme.api.schemas.user import UserOut
 from glueme.app.settings import DELAY_BETWEEN_REG_CODES, CodeTypes
 from glueme.models import models
@@ -67,3 +67,13 @@ def send_code(email: EmailStr = Query(...), s: Session = Depends(get_session)):
 @router.get('.is_valid_code', response_model=CodeValidityOut)
 def is_valid(email: EmailStr = Query(...), code: str = Query(...), s: Session = Depends(get_session)):
     return CodeValidityOut(is_valid=CodeService.is_valid_reg_code(s, email=email, code=code))
+
+
+@router.get('.is_email_exists', response_model=IsEmailExistsOut)
+def is_email_exists(email: str = Query(...), s: Session = Depends(get_session)):
+    return IsEmailExistsOut(exists=models.User.email_exists(s, email=email))
+
+
+@router.get('.is_nick_exists', response_model=IsNickExistsOut)
+def is_nick_exists(nick: str = Query(...), s: Session = Depends(get_session)):
+    return IsNickExistsOut(exists=models.User.nick_exists(s, nick=nick))

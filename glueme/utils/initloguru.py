@@ -2,6 +2,8 @@ import sys
 
 from loguru import logger
 
+from glueme.app.settings import LOG_PATH
+
 
 def init_loguru():
     logger.remove(0)

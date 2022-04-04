@@ -1,3 +1,4 @@
+from loguru import logger
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 
@@ -16,6 +17,7 @@ def create_tables():
     from ..models import models
     models  # not to be removed when optimizing imports
     Base.metadata.create_all(bind=engine, checkfirst=True)
+    logger.info('tables were created')
 
 
 def recreate_tables():
@@ -23,4 +25,4 @@ def recreate_tables():
     models  # not to be removed when optimizing imports
     Base.metadata.drop_all(bind=engine, checkfirst=True)
     Base.metadata.create_all(bind=engine, checkfirst=True)
-
+    logger.info('tables were recreated')

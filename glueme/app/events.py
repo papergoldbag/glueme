@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from loguru import logger
 from sqlalchemy.orm import close_all_sessions
 
 from glueme.app.db import create_tables, new_session
@@ -16,6 +17,7 @@ def add_code_types():
         session.add(models.CodeType(name=CodeTypes.FORGOT_PASS))
     session.commit()
     session.close()
+    logger.info('code types were added')
 
 
 def add_default_tags():
@@ -28,6 +30,7 @@ def add_default_tags():
             ))
     session.commit()
     session.close()
+    logger.info('default tags were added')
 
 
 async def on_startup():

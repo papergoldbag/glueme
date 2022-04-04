@@ -8,7 +8,6 @@ push.sh
 pushheroku.sh
 *.csv
 *.sqlite
-settings.py
 *.exe
 *.log
 *.pkl

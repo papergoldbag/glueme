@@ -47,6 +47,7 @@ def update_nick(u: UserUpdateNickIn = Body(...), user: models.User = Depends(get
     if models.User.nick_exists(s, nick=u.nick):
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, 'nick already exists')
     user.nick = u.nick
+    s.commit()
     return UserOut.from_orm(user)
 
 

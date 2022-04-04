@@ -18,6 +18,7 @@ python-dotenv = "^0.19.2"
 requests = "^2.27.1"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 multipledispatch = "^0.6.0"
+loguru = "^0.6.0"
 
 [tool.poetry.dev-dependencies]
 

@@ -3,6 +3,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from .events import on_startup, on_shutdown
 from ..api.router import api_router
+from ..utils.initloguru import init_loguru
 
 
 def setup_middleware(app: FastAPI):
@@ -16,6 +17,8 @@ def setup_middleware(app: FastAPI):
 
 
 def get_application() -> FastAPI:
+    init_loguru()
+
     application = FastAPI(title='GlueMe API')
 
     setup_middleware(application)

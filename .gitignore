@@ -8,6 +8,7 @@ push.sh
 herokupush.sh
 *.csv
 *.sqlite
+settings.py
 *.exe
 *.log
 *.pkl

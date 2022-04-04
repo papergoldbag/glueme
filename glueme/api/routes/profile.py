@@ -59,3 +59,13 @@ def remove_token(token: str = Query(...), user: models.User = Depends(get_curren
     s.delete(token)
     s.commit()
     return Response(status_code=status.HTTP_200_OK)
+
+
+@router.delete('.deactivate_another_token')
+def remove_token(token_id: int = Query(...), user: models.User = Depends(get_current_user), s: Session = Depends(get_session)):
+    token = models.UserToken.by_id(s, _id=token_id)
+    if not token:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, f'no token')
+    s.delete(token)
+    s.commit()
+    return Response(status_code=status.HTTP_200_OK)

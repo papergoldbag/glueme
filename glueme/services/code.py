@@ -35,13 +35,6 @@ class CodeService:
         return False
 
     @classmethod
-    def get_valid_code(cls, s: Session, *, email: str, code: str, code_type_name: str) -> Optional[models.SentCode]:
-        found_code: Optional[models.SentCode] = cls._get_last_code(s, email=email, code_type_name=code_type_name)
-        if found_code and found_code.code == code and found_code.expired > dt_to_utc(datetime.now()) and not found_code.is_used:
-            return found_code
-        return None
-
-    @classmethod
     def can_send_reg_code(cls, s: Session, *, email: str) -> bool:
         return cls._can_send(s, email=email, code_type_name=CodeTypes.REG, delay=DELAY_BETWEEN_REG_CODES)
 
@@ -50,8 +43,21 @@ class CodeService:
         return cls._can_send(s, email=email, code_type_name=CodeTypes.FORGOT_PASS, delay=DELAY_BETWEEN_FORGOTPASS_CODES)
 
     @classmethod
+    def get_valid_code(cls, s: Session, *, email: str, code: str, code_type_name: str) -> Optional[models.SentCode]:
+        found_code: Optional[models.SentCode] = cls._get_last_code(s, email=email, code_type_name=code_type_name)
+        if found_code and found_code.code == code and found_code.expired > dt_to_utc(
+                datetime.now()) and not found_code.is_used:
+            return found_code
+        return None
+
+    @classmethod
     def is_valid_reg_code(cls, s: Session, *, email: str, code: str) -> bool:
         code = cls.get_valid_code(s, email=email, code=code, code_type_name=CodeTypes.REG)
+        return True if code else False
+
+    @classmethod
+    def is_valid_forgotpass_code(cls, s: Session, *, email: str, code: str) -> bool:
+        code = cls.get_valid_code(s, email=email, code=code, code_type_name=CodeTypes.FORGOT_PASS)
         return True if code else False
 
     @classmethod

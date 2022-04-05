@@ -16,7 +16,7 @@ class TagToUser(Base):
     tag_id = Column(Integer, ForeignKey('tag.id', ondelete='CASCADE'), nullable=False)
 
     @classmethod
-    def get_user_tag(cls, s: Session, *, tag_id: int, user_id: int) -> TagToUser:
+    def get_user_tag(cls, s: Session, *, tag_id: int, user_id: int) -> Optional[TagToUser]:
         return s.query(cls).where(
             cls.tag_id == tag_id,
             cls.user_id == user_id
@@ -131,4 +131,3 @@ class SentCode(Base):
     expired = Column(DateTime(timezone=False), nullable=False)
     is_used = Column(Boolean, nullable=False)
     code_type_name = Column(VARCHAR(31), ForeignKey(CodeType.name, ondelete='CASCADE'), nullable=False)
-

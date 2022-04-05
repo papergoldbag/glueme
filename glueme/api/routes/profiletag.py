@@ -34,7 +34,7 @@ def add_tag_with_title(addtag: AddTagWithTitleIn = Body(...), s: Session = Depen
             raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, 'you have this tag yet')
     else:
         tag = models.Tag(
-            title=addtag.title,
+            title=addtag.title.strip(),
             created=dt_to_utc(datetime.now())
         )
         s.add(tag)

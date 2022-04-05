@@ -1,10 +1,11 @@
-from fastapi import APIRouter, HTTPException, Depends, Body
+from fastapi import APIRouter, HTTPException, Depends, Body, Query
 from loguru import logger
+from pydantic import EmailStr
 from sqlalchemy.orm import Session
 from starlette import status
 
 from glueme.api.depends import get_session
-from glueme.api.schemas.code import SentCodeOut
+from glueme.api.schemas.code import SentCodeOut, CodeValidityOut
 from glueme.api.schemas.forgotpass import UserForgotPass, PasswordWasChanged
 from glueme.app.settings import DELAY_BETWEEN_FORGOTPASS_CODES, CodeTypes
 from glueme.models import models
@@ -29,6 +30,7 @@ def change_password(fp: UserForgotPass = Body(...), s: Session = Depends(get_ses
 
 @router.get('.send_code', response_model=SentCodeOut)
 def send_forgotpass_code(nick_or_email: str, s: Session = Depends(get_session)):
+    nick_or_email = nick_or_email.strip()
     user = models.User.by_nick_or_email(s, nick_or_email=nick_or_email)
     if not user:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, 'user not exists')
@@ -43,3 +45,7 @@ def send_forgotpass_code(nick_or_email: str, s: Session = Depends(get_session)):
     sent_code = CodeService.add_forgotpass_code(s, email=user.email, code=code)
     return SentCodeOut.from_orm(sent_code)
 
+
+@router.get('.is_valid_code', response_model=CodeValidityOut)
+def is_valid_code(email: EmailStr = Query(...), code: str = Query(...), s: Session = Depends(get_session)):
+    return CodeValidityOut(is_valid=CodeService.is_valid_forgotpass_code(s, email=email.strip(), code=code.strip()))

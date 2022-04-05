@@ -11,6 +11,7 @@ pushheroku.sh
 *.sqlite
 *.exe
 *.log
+test.py
 *.pkl
 *.json
 files

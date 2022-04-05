@@ -19,6 +19,8 @@ router = APIRouter()
 @router.post('', response_model=PasswordWasChanged)
 def change_password(fp: UserForgotPass = Body(...), s: Session = Depends(get_session)):
     user = models.User.by_nick_or_email(s, nick_or_email=fp.nick_or_email)
+    if not user:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, 'no user')
     valid_code = CodeService.get_valid_code(s, email=user.email, code=fp.code, code_type_name=CodeTypes.FORGOT_PASS)
     if not valid_code:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, 'code is invalid')

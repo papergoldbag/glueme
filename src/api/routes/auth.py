@@ -13,7 +13,6 @@ router = APIRouter()
 
 @router.post('', response_model=TokenOut)
 def user_auth(auth: UserAuthIn = Body(...), s: Session = Depends(get_session)):
-    raise Exception('ASfasf')
     user = models.User.by_nick_or_email(s, nick_or_email=auth.nick_or_email)
     if not user:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='bad auth data')

@@ -3,6 +3,7 @@
 <p>GlueMe - социальная сеть для мобильных устройств</p>
 <p>Это стартовая версия проекта, поэтому код не супер разделен на MVC</p>
 <p>Не использовал Docker, в будущем можно подрубить</p>
+<p>Также для старта юзал Sqlalchemy, потом можно на async databases перейти</p>
 
 
 СРЕДА ЗАПУСКА
@@ -60,7 +61,7 @@ poetry env use python3.10
 poetry install
 ~~~
 
-### Файл настроек src/glueme/settings.py
+### Пример Файла настроек src/glueme/settings.py
 ~~~
 import os
 import pathlib
@@ -90,25 +91,25 @@ DEFAULT_TAGS: list[str] = ['Бег', 'Прыжки', 'Машины', "Расте
 ~~~
 
 
-### Создаём сервис
+### Создаём сервис glueme
 ~~~
 sudo cp /home/glueme/glueme/deploy/glueme.service /etc/systemd/glueme.service
 sudo systemctl start glueme.service
 ~~~
 
-### Проверем статус
+### Проверем статус сервиса
 ~~~
 sudo systemctl status glueme.service
 ~~~
 
-### NGINX config
+### Настройка NGINX
 ~~~
 sudo cp /home/glueme/glueme/deploy/gluemenginx.txt /etc/nginx/sites-enabled/glueme
 sudo sudo systemctl restart nginx
 ~~~
 
 
-### Настройка сертификато
+### Настройка сертификатов
 ~~~
 sudo certbot certonly --nginx
 ...

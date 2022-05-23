@@ -3,7 +3,7 @@ from typing import Optional, Union
 
 from pydantic import BaseModel, Field, EmailStr, validator, constr
 
-from glueme.api.schemas.tag import TagOut
+from src.api.schemas.tag import TagOut
 
 re_password = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,}$'
 re_nick = r'^(?=.{3,20}$)(?![0-9_])[a-zA-Z0-9_]+(?<![_.])$'

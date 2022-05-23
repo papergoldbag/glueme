@@ -1,19 +1,19 @@
 <a>GlueMe</a>
 ------------
 <p>GlueMe - социальная сеть для мобильных устройств</p>
+<p>Это стартовая версия проекта, поэтому код не супер разделен на MVC</p>
+<p>Не использовал Docker, в будущем можно подрубить</p>
 
 
 СРЕДА ЗАПУСКА
 ------------
 Развертывание сервиса производится на linux(ubuntu20)
-Поскольку это стартовая версия, то использовал монолит в коде
-Также не использовал Docker, на данном этапе это не нужно
 
 
 DEPLOY
 ------------
 
-### Зависимости
+### Install and Update
 ~~~
 sudo apt update
 sudo apt upgrade
@@ -29,9 +29,8 @@ sudo snap refresh core
 sudo snap install --classic certbot
 ~~~
 
-### База данных
+### Настройка базы данных
 ~~~
-sudo systemctl start postgresql
 sudo -i -u postgres
 psql
 create user glueme with password 'PASSWORD' CREATEDB;
@@ -44,21 +43,73 @@ sudo adduser glueme
 sudo usermod -aG glueme
 ~~~
 
-### Репозиторий
+### Установка Poetry
 ~~~
 su - glueme
-
 curl -sSL https://install.python-poetry.org | python3.10 -
 export PATH=$PATH:$HOME/.poetry/bin
 poetry config virtualenvs.in-project true
+~~~
 
+### Работа с Репозиторием
+~~~
+su - glueme
 git clone git@github.com:papergoldbag/glueme.git
 cd glueme
 poetry env use python3.10
 poetry install
 ~~~
 
-### Файл настроек ./glueme/app/settings.py
+### Файл настроек src/glueme/settings.py
 ~~~
-TODO
+import os
+import pathlib
+
+
+TITLE = 'Glue Me API'
+
+APIKEY: str = 'apikey'
+API_PREFIX = '/api'
+
+DATABASE_URL: str = 'postgresql://glueme:3455742@{server_ip}:5432/glueme'
+
+MAILRU_LOGIN: str = 'support@gluemeproject.ru'
+MAILRU_PASS: str = 'Support123456789'
+MAILRU_SERVER: str = 'smtp.mail.ru'
+MAILRU_PORT: int = 465
+
+DELAY_BETWEEN_REG_CODES: int = 30
+LIFETIME_REG_CODE: int = 300
+
+DELAY_BETWEEN_FORGOTPASS_CODES: int = 60
+LIFETIME_FORGOTPASS_CODE: int = 300
+
+LOG_PATH: str = str(pathlib.Path(os.path.abspath(__file__)).parent.parent.parent / 'story.log')
+
+DEFAULT_TAGS: list[str] = ['Бег', 'Прыжки', 'Машины', "Растения", 'Собаки', 'Компьютеры', 'Птицы']
+~~~
+
+
+### Создаём сервис
+~~~
+sudo cp /home/glueme/glueme/deploy/glueme.service /etc/systemd/glueme.service
+sudo systemctl start glueme.service
+~~~
+
+### Проверем статус
+~~~
+sudo systemctl status glueme.service
+~~~
+
+### NGINX config
+~~~
+sudo cp /home/glueme/glueme/deploy/gluemenginx.txt /etc/nginx/sites-enabled/glueme
+sudo sudo systemctl restart nginx
+~~~
+
+
+### Настройка сертификато
+~~~
+sudo certbot certonly --nginx
+...
 ~~~

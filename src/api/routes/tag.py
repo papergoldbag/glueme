@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
-from glueme.api.depends import get_current_user, get_session
-from glueme.api.schemas.tag import TagWithIsMyOut, TagOut
-from glueme.models import models
-from glueme.services.tag import TagService
+from src.api.depends import get_current_user, get_session
+from src.api.schemas.tag import TagWithIsMyOut, TagOut
+from src.glueme import models
+from src.services.tag import TagService
 
 router = APIRouter()
 

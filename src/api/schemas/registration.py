@@ -1,6 +1,6 @@
 from pydantic import Field, EmailStr, validator, BaseModel, constr
 
-from glueme.api.schemas.user import re_nick, re_password
+from src.api.schemas.user import re_nick, re_password
 
 
 class RegistrationIn(BaseModel):

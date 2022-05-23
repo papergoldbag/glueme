@@ -1,6 +1,6 @@
 from pydantic import BaseModel, constr, validator
 
-from glueme.api.schemas.user import re_password
+from src.api.schemas.user import re_password
 
 
 class UserForgotPass(BaseModel):

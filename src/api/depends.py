@@ -3,8 +3,8 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from starlette import status
 
-from ..app.db import new_session
-from ..models import models
+from ..glueme import models
+from ..glueme.db import new_session
 from ..services.user import UserService
 
 

@@ -6,18 +6,18 @@ from typing import Optional
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from glueme.models import models
+from src.glueme import models
 
 
 class UserService:
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
     @classmethod
-    def verify_password(cls, password, hashed_password):
+    def verify_password(cls, password, hashed_password) -> bool:
         return cls.pwd_context.verify(password, hashed_password)
 
     @classmethod
-    def password_hash(cls, password):
+    def password_hash(cls, password) -> str:
         return cls.pwd_context.hash(password)
 
     @classmethod
@@ -27,7 +27,7 @@ class UserService:
 
     @classmethod
     def user_by_token(cls, s: Session, *, token: str) -> Optional[models.User]:
-        return s.query(models.User, models.UserToken).filter(
+        return s.query(models.User, models.UserToken).where(
             models.User.id == models.UserToken.user_id, models.UserToken.token == token
         ).scalar()
 
@@ -37,5 +37,3 @@ class UserService:
             models.TagToUser.tag_id == tag_id,
             models.TagToUser.user_id == user_id
         ).exists()).scalar()
-
-

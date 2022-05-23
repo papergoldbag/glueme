@@ -3,10 +3,10 @@ from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from starlette import status
 
-from glueme.api.depends import get_current_user, get_session, http_bearer
-from glueme.api.schemas.token import TokenDeviceOut
-from glueme.api.schemas.user import UserOut, UserUpdateIn, UserUpdateNickIn
-from glueme.models import models
+from src.api.depends import get_current_user, get_session, http_bearer
+from src.api.schemas.token import TokenDeviceOut
+from src.api.schemas.user import UserOut, UserUpdateIn, UserUpdateNickIn
+from src.glueme import models
 
 router = APIRouter()
 

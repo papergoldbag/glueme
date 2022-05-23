@@ -2,16 +2,17 @@ from __future__ import annotations
 
 from typing import Optional
 
+from loguru import logger
 from sqlalchemy import Column, Integer, Identity, VARCHAR, DateTime, String, ForeignKey, Boolean, or_, func
 from sqlalchemy.orm import relationship, Session
 
-from glueme.app.db import Base
+from src.glueme.db import Base, engine
 
 
 class TagToUser(Base):
     __tablename__ = 'tagtouser'
 
-    id = Column(Integer, Identity('by default'), primary_key=True)
+    id = Column(Integer, Identity(always=True), primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     tag_id = Column(Integer, ForeignKey('tag.id', ondelete='CASCADE'), nullable=False)
 
@@ -26,7 +27,7 @@ class TagToUser(Base):
 class Tag(Base):
     __tablename__ = 'tag'
 
-    id = Column(Integer, Identity('by default'), primary_key=True)
+    id = Column(Integer, Identity(always=True), primary_key=True)
     title = Column(VARCHAR(63), nullable=False, unique=True)
     created = Column(DateTime(timezone=False), nullable=False)
 
@@ -74,7 +75,9 @@ class User(Base):
 
     @classmethod
     def by_nick_or_email(cls, s: Session, *, nick_or_email: str) -> Optional[User]:
-        return s.query(cls).where(or_(cls.nick == nick_or_email, cls.email == nick_or_email)).scalar()
+        return s.query(cls).where(
+            or_(cls.nick == nick_or_email, cls.email == nick_or_email)
+        ).scalar()
 
     @classmethod
     def by_nick(cls, s: Session, *, nick: str) -> Optional[User]:
@@ -97,7 +100,7 @@ class User(Base):
 
 class UserToken(Base):
     __tablename__ = 'usertoken'
-    id = Column(Integer, Identity('by default'), primary_key=True)
+    id = Column(Integer, Identity(always=True), primary_key=True)
     token = Column(VARCHAR(255), nullable=False, unique=True)
     user_agent = Column(VARCHAR(255), nullable=False)
     user_id = Column(Integer, ForeignKey(User.id, ondelete='CASCADE'), nullable=False)
@@ -114,8 +117,22 @@ class UserToken(Base):
 
 
 class CodeType(Base):
+    class Types:
+        REG: str = 'reg'
+        FORGOT_PASS: str = 'forgot_pass'
+
     __tablename__ = 'codetype'
     name = Column(VARCHAR(31), primary_key=True, unique=True)
+
+    @classmethod
+    def add_code_types(cls, s: Session):
+        if not cls.type_exists(s, name=cls.Types.REG):
+            s.add(CodeType(name=cls.Types.REG))
+        if not cls.type_exists(s, name=cls.Types.FORGOT_PASS):
+            s.add(CodeType(name=cls.Types.FORGOT_PASS))
+        s.commit()
+        s.close()
+        logger.info('code types were added')
 
     @classmethod
     def type_exists(cls, s: Session, *, name: str) -> bool:
@@ -124,10 +141,21 @@ class CodeType(Base):
 
 class SentCode(Base):
     __tablename__ = 'sentcode'
-    id = Column(Integer, Identity('by default'), primary_key=True)
+    id = Column(Integer, Identity(always=True), primary_key=True)
     code = Column(VARCHAR(63), nullable=False)
     email = Column(VARCHAR(127), nullable=False)
     created = Column(DateTime(timezone=False), nullable=False)
     expired = Column(DateTime(timezone=False), nullable=False)
     is_used = Column(Boolean, nullable=False)
     code_type_name = Column(VARCHAR(31), ForeignKey(CodeType.name, ondelete='CASCADE'), nullable=False)
+
+
+def create_tables():
+    Base.metadata.create_all(bind=engine, checkfirst=True)
+    logger.info('tables were created')
+
+
+def recreate_tables():
+    Base.metadata.drop_all(bind=engine, checkfirst=True)
+    Base.metadata.create_all(bind=engine, checkfirst=True)
+    logger.info('tables were recreated')

@@ -6,23 +6,28 @@ from pydantic import EmailStr
 from sqlalchemy.orm import Session
 from starlette import status
 
-from glueme.api.depends import get_session
-from glueme.api.schemas.code import CodeValidityOut, SentCodeOut
-from glueme.api.schemas.registration import RegistrationIn, IsEmailExistsOut, IsNickExistsOut
-from glueme.api.schemas.user import UserOut
-from glueme.app.settings import DELAY_BETWEEN_REG_CODES, CodeTypes
-from glueme.models import models
-from glueme.services.code import CodeService
-from glueme.services.user import UserService
-from glueme.utils.dtutc import dt_to_utc
-from glueme.utils.emailsender import EmailSender
+from src.api.depends import get_session
+from src.api.schemas.code import CodeValidityOut, SentCodeOut
+from src.api.schemas.registration import RegistrationIn, IsEmailExistsOut, IsNickExistsOut
+from src.api.schemas.user import UserOut
+from src.glueme import models
+from src.glueme.settings import DELAY_BETWEEN_REG_CODES
+from src.services.code import CodeService
+from src.services.user import UserService
+from src.utils.dtutc import dt_to_utc
+from src.utils.emailsender import send_mail
 
 router = APIRouter()
 
 
 @router.post('', response_model=UserOut)
 def registration(reg: RegistrationIn = Body(...), s: Session = Depends(get_session)):
-    valid_code = CodeService.get_valid_code(s, email=reg.email, code=reg.code, code_type_name=CodeTypes.REG)
+    valid_code = CodeService.get_valid_code(
+        s,
+        email=reg.email,
+        code=reg.code,
+        code_type_name=models.CodeType.Types.REG
+    )
     if not valid_code:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, 'code is invalid')
     if models.User.email_exists(s, email=reg.email):
@@ -47,10 +52,7 @@ def registration(reg: RegistrationIn = Body(...), s: Session = Depends(get_sessi
             tag_id=tag_id
         ))
     s.commit()
-    try:
-        EmailSender.send(new_user.email, 'Регистрация', f'Поздравляем с регистрацией, {new_user.nick}!!!')
-    except Exception as e:
-        logger.opt(exception=e).error(e)
+    send_mail(new_user.email, 'Регистрация', f'Поздравляем с регистрацией, {new_user.nick}!!!')
     return UserOut.from_orm(new_user)
 
 
@@ -62,7 +64,7 @@ def send_code(email: EmailStr = Query(...), s: Session = Depends(get_session)):
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, f'wait {DELAY_BETWEEN_REG_CODES} sec before sending')
     code = CodeService.generate_code()
     try:
-        EmailSender.send(email, 'Код для регистрации', f'{code}')
+        send_mail(email, 'Код для регистрации', f'{code}')
     except Exception as e:
         logger.opt(exception=e).error(e)
         raise HTTPException(status.HTTP_400_BAD_REQUEST, 'smth wrong with email sending')

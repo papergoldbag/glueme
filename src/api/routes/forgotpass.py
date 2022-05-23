@@ -4,14 +4,14 @@ from pydantic import EmailStr
 from sqlalchemy.orm import Session
 from starlette import status
 
-from glueme.api.depends import get_session
-from glueme.api.schemas.code import SentCodeOut, CodeValidityOut
-from glueme.api.schemas.forgotpass import UserForgotPass, PasswordWasChanged
-from glueme.app.settings import DELAY_BETWEEN_FORGOTPASS_CODES, CodeTypes
-from glueme.models import models
-from glueme.services.code import CodeService
-from glueme.services.user import UserService
-from glueme.utils.emailsender import EmailSender
+from src.api.depends import get_session
+from src.api.schemas.code import SentCodeOut, CodeValidityOut
+from src.api.schemas.forgotpass import UserForgotPass, PasswordWasChanged
+from src.glueme import models
+from src.glueme.settings import DELAY_BETWEEN_FORGOTPASS_CODES
+from src.services.code import CodeService
+from src.services.user import UserService
+from src.utils.emailsender import send_mail
 
 router = APIRouter()
 
@@ -21,7 +21,12 @@ def change_password(fp: UserForgotPass = Body(...), s: Session = Depends(get_ses
     user = models.User.by_nick_or_email(s, nick_or_email=fp.nick_or_email)
     if not user:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, 'no user')
-    valid_code = CodeService.get_valid_code(s, email=user.email, code=fp.code, code_type_name=CodeTypes.FORGOT_PASS)
+    valid_code = CodeService.get_valid_code(
+        s,
+        email=user.email,
+        code=fp.code,
+        code_type_name=models.CodeType.Types.FORGOT_PASS
+    )
     if not valid_code:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, 'code is invalid')
     valid_code.is_used = True
@@ -40,7 +45,7 @@ def send_forgotpass_code(nick_or_email: str, s: Session = Depends(get_session)):
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, f'wait {DELAY_BETWEEN_FORGOTPASS_CODES} sec before sending')
     code = CodeService.generate_code()
     try:
-        EmailSender.send(user.email, 'Код для сброса пароля', f'{code}')
+        send_mail(user.email, 'Код для сброса пароля', f'{code}')
     except Exception as e:
         logger.opt(exception=e).error(e)
         raise HTTPException(status.HTTP_400_BAD_REQUEST, 'smth wrong with sending')

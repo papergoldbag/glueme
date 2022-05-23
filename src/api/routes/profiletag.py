@@ -4,12 +4,12 @@ from fastapi import APIRouter, Depends, Body, Query, HTTPException
 from sqlalchemy.orm import Session
 from starlette import status
 
-from glueme.api.depends import get_current_user, get_session
-from glueme.api.schemas.tag import AddTagWithTitleIn, AddTagWithIdIn
-from glueme.api.schemas.user import TagOut
-from glueme.models import models
-from glueme.services.user import UserService
-from glueme.utils.dtutc import dt_to_utc
+from src.api.depends import get_current_user, get_session
+from src.api.schemas.tag import AddTagWithTitleIn, AddTagWithIdIn
+from src.api.schemas.user import TagOut
+from src.glueme import models
+from src.services.user import UserService
+from src.utils.dtutc import dt_to_utc
 
 router = APIRouter()
 

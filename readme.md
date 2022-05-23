@@ -110,32 +110,6 @@ sudo sudo systemctl restart nginx
 
 ### Настройка сертификато
 ~~~
-<<<<<<< HEAD
 sudo certbot certonly --nginx
 ...
-=======
-import os
-import pathlib
-
-APIKEY: str = ...
-DATABASE_URL: str = ...
-MAILRU_LOGIN: str = ...
-MAILRU_PASS: str = ...
-
-DELAY_BETWEEN_REG_CODES: int = 30
-LIFETIME_REG_CODE: int = 300
-
-DELAY_BETWEEN_FORGOTPASS_CODES: int = 60
-LIFETIME_FORGOTPASS_CODE: int = 300
-
-LOG_PATH: str = str(pathlib.Path(os.path.abspath(__file__)).parent.parent.parent / '.env')
-
-
-class CodeTypes:
-    REG: str = 'reg'
-    FORGOT_PASS: str = 'forgot_pass'
-
-
-DEFAULT_TAGS: list[str] = ['Бег', 'Прыжки', 'Машины', "Растения", 'Собаки', 'Компьютеры', 'Птицы']
->>>>>>> 44228c9547105bcecac94b78903ceeb8121967a2
 ~~~

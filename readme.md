@@ -35,7 +35,7 @@ sudo snap install --classic certbot
 ~~~
 sudo -i -u postgres
 psql
-create user glueme with password 'PASSWORD' CREATEDB;
+create user glueme with password '123456789' CREATEDB;
 create database glueme with owner glueme encoding 'UTF8';
 ~~~
 
@@ -73,7 +73,7 @@ TITLE = 'Glue Me API'
 APIKEY: str = 'apikey'
 API_PREFIX = '/api'
 
-DATABASE_URL: str = 'postgresql://glueme:3455742@{server_ip}:5432/glueme'
+DATABASE_URL: str = 'postgresql://glueme:123456789@{server_ip}:5432/glueme'
 
 MAILRU_LOGIN: str = 'support@gluemeproject.ru'
 MAILRU_PASS: str = 'Support123456789'
